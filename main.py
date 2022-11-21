@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from bottle import Bottle, run, template, static_file, request, redirect
 from beaker.middleware import SessionMiddleware
-#from database import engine
+from database import db
 
 app = Bottle()
 
@@ -12,25 +12,44 @@ def send_static(filename):
 
 @app.route('/', method='GET')
 def home():
-  session = request.environ.get('beaker.session')
+  logged = request.params.logged
+  mensaje = ''
+  if logged == 'true':
+    mensaje = 'Ususario logeado'
   locals = {
     'title': 'Bienvenido',
+    'mensaje': mensaje
   }
-  if session != None:
-    if session['logged']:
-      return template('home/index')
-  return redirect('/login')
+  return template('home/index', locals)
 
 @app.route('/login', method='GET')
 def login():
-  session = request.environ.get('beaker.session')
   locals = {
-    'title': 'login',
+    'title': 'Acceso al Sistema',
+    'mensaje': ''
   }
-  if session != None:
-    if session['logged']:
-      return redirect('/')
-  return template('login/index')
+  return template('login/index', locals)
+
+@app.route('/login', method='POST')
+def login_acceder():
+  # pametros
+  usuario = request.params.usuario
+  contrasenia = request.params.contrasenia
+  query = {'usuario': usuario, 'contrasenia': contrasenia}
+  rs = db['usuarios'].find(query)
+  # acceso de db
+  n = 0
+  for d in rs:
+    n = n + 1
+  # devolver datos a una vista
+  if n == 1:
+    return redirect('/?logged=true')
+  else:
+    locals = {
+      'title': 'Acceso al Sistema',
+      'mensaje': 'Usuario y/o contraseña no válidos'
+    }
+    return template('login/index', locals)
 
 if __name__ == '__main__':
   app_session = SessionMiddleware(
