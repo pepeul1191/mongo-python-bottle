@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  mongodb:
+    image : mongo
+    container_name: mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /home/pepe/Documentos/ULima/2022-II/Ingeniería de Datos/Semana 14/v2/database:/data/db
+    ports:
+      - 27019:27017
+    restart: unless-stopped
