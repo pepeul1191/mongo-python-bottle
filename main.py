@@ -3,6 +3,7 @@
 from bottle import Bottle, run, template, static_file, request, redirect
 from beaker.middleware import SessionMiddleware
 from database import db
+import datetime
 
 app = Bottle()
 
@@ -36,11 +37,21 @@ def login_acceder():
   usuario = request.params.usuario
   contrasenia = request.params.contrasenia
   query = {'usuario': usuario, 'contrasenia': contrasenia}
-  rs = db['usuarios'].find(query)
+  collection_usuarios = db['usuarios'] 
+  documents = collection_usuarios.find(query)
   # acceso de db
   n = 0
-  for d in rs:
+  for d in documents:
     n = n + 1
+    # agregar loging a documento
+    momento = datetime.datetime.now()
+    collection_usuarios.update_one(
+      query, {
+        '$push': { 
+          'accesos': momento
+          }
+        }, upsert = True
+    )
   # devolver datos a una vista
   if n == 1:
     return redirect('/?logged=true')
