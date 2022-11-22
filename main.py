@@ -106,6 +106,17 @@ def detalle_usuario_editar():
     # devolver datos a una vista
     locals = {'usuario': usuario, 'titulo': 'Editar Usuario', 'title': 'Editar Usuario'}
     return template('usuario/detail', locals)
+  
+@app.route('/usuario/eliminar', method='GET')
+def usuario_eliminar():
+    # pametros
+    usuario_id = request.params.id
+    # acceso de db
+    usuarios_collection = db['usuarios']
+    query = {'_id': ObjectId(usuario_id)}
+    usuarios_collection.find_one_and_delete(query)
+    # devolver datos a una vista
+    redirect('/')
 
 @app.route('/usuario/editar', method='POST')
 def usuario_editar():
@@ -117,7 +128,7 @@ def usuario_editar():
     usuarios_collection = db['usuarios']
     query = {'_id': ObjectId(usuario_id)}
     document = {'usuario': usuario, 'contrasenia': contrasenia}
-    usuario = usuarios_collection.find_one_and_replace(query, document)
+    usuario = usuarios_collection.find_one_and_update(query, {'$set': document})
     # devolver datos a una vist
     redirect('/')
 
