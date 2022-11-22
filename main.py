@@ -31,6 +31,32 @@ def login():
   }
   return template('login/index', locals)
 
+@app.route('/login/sign_up', method='GET')
+def sign_up():
+  locals = {
+    'title': 'Crear cuenta',
+    'mensaje': ''
+  }
+  return template('login/sign_up', locals)
+
+@app.route('/login/sign_up', method='POST')
+def create_account():
+  # pametros
+  usuario = request.params.usuario
+  contrasenia = request.params.contrasenia
+  contrasenia2 = request.params.contrasenia2
+  if contrasenia != contrasenia2:
+    locals = {
+      'title': 'Crear cuenta',
+      'mensaje': 'Contraseñas no coinciden'
+    }
+    return template('login/sign_up', locals)
+  else:
+    document = {'usuario': usuario, 'contrasenia': contrasenia, 'accesos': []}
+    collection_usuarios = db['usuarios'] 
+    collection_usuarios.insert_one(document)
+    redirect('/login')
+
 @app.route('/login', method='POST')
 def login_acceder():
   # pametros
@@ -72,4 +98,4 @@ if __name__ == '__main__':
       'session.auto': True
     }
   )
-  run(app, host='0.0.0.0', port=8081, debug=True, reloader=True)
+  run(app_session, host='0.0.0.0', port=8081, debug=True, reloader=True)
