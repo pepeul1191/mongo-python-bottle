@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from bottle import Bottle, run, template, static_file, request, redirect
 from beaker.middleware import SessionMiddleware
+from bson.objectid import ObjectId
 from database import db
 import datetime
 
@@ -93,6 +94,19 @@ def login_acceder():
       'mensaje': 'Usuario y/o contraseña no válidos'
     }
     return template('login/index', locals)
+
+@app.route('/usuario/editar', method='GET')
+def sangre_editar():
+    # pametros
+    usuario_id = request.params.id
+    # acceso de db
+    usuarios_collection = db['usuarios']
+    query = {'_id': ObjectId(usuario_id)}
+    usuario = usuarios_collection.find_one(query)
+    print(usuario)
+    # devolver datos a una vista
+    locals = {'usuario': usuario, 'titulo': 'Editar Usuario', 'title': 'Editar Usuario'}
+    return template('usuario/detail', locals)
 
 if __name__ == '__main__':
   app_session = SessionMiddleware(
