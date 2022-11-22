@@ -14,12 +14,18 @@ def send_static(filename):
 @app.route('/', method='GET')
 def home():
   logged = request.params.logged
+  usuarios = []
   mensaje = ''
   if logged == 'true':
     mensaje = 'Ususario logeado'
+    proyecion = {'_id': 1, 'usuario': 1}
+    usuarios_collection = db['usuarios'].find({}, proyecion)
+    for d in usuarios_collection:
+      usuarios.append(d)
   locals = {
     'title': 'Bienvenido',
-    'mensaje': mensaje
+    'mensaje': mensaje,
+    'usuarios': usuarios
   }
   return template('home/index', locals)
 
