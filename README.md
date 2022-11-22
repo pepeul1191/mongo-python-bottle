@@ -24,10 +24,14 @@ services:
     restart: unless-stopped
 ```
 
+Inserciones
+
+```javascript
 db.usuario.insertMany([
   {usuario: 'pepe', constrasenia: '123', accesos: []},
   {usuario: 'sila', constrasenia: '123', accesos: []},
 ])
+```
 
 Modificar en la línea de la llave 'volumnes' con una ruta en disco donde que quiera almacenar la db.
 
